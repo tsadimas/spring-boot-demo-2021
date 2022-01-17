@@ -7,45 +7,43 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
+import java.util.Optional;
 
 @Service
 public class UserService implements UserDetailsService {
 
-
-    private UserRepository userRepository;
-    private final CustomPasswordEncoder customPasswordEncoder;
-
     @Autowired
-    public UserService(UserRepository userRepository,
-                       @Lazy CustomPasswordEncoder customPasswordEncoder){
-        this.userRepository = userRepository;
-        this.customPasswordEncoder = customPasswordEncoder;
+    private UserRepository userRepository;
 
-    }
+
+
 
     public void registerUser(User user) {
 
         System.out.println("In save =================");
         User newUser = new User();
         newUser.setUsername(user.getUsername());
-        newUser.setPassword(customPasswordEncoder.encode(user.getPassword()));
+        newUser.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
         userRepository.save(newUser);
 
     }
 
-    public User findUserById(int id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new NullPointerException("user not found"));
-    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = new User();
-        return new org.springframework.security.core.userdetails.User(user.getUsername(),
-                user.getPassword(), Collections.emptyList());
+        Optional<User> user = userRepository.findByUsername(username);
+//        return new org.springframework.security.core.userdetails.User(user.getUsername(),
+//                user.getPassword(), Collections.emptyList());
+        if (user.isPresent()){
+            return new org.springframework.security.core.userdetails.User(user.get().getUsername(), user.get().getPassword(), Collections.emptyList());
+        }else{
+            throw new UsernameNotFoundException(String.format("Username[%s] not found", username));
+        }
 
     }
 }
