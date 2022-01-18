@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -35,18 +36,24 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 //                .antMatchers("/**").hasRole("ADMIN")
 //                .and().csrf().disable().headers().frameOptions().disable()
 //                .and().formLogin().permitAll().and().logout().permitAll();
-        http
-                .httpBasic()
-                .and()
+//        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
+        http.csrf().disable()
                 .authorizeRequests()
+                .antMatchers("/api/users").hasRole("ADMIN")
+                .antMatchers("/api/students").hasAnyRole("ADMIN","USER")
                 .anyRequest().authenticated()
-                .and().formLogin().permitAll().and().logout().permitAll();
+                .and()
+                .httpBasic()
+                .and().
+                formLogin().permitAll().and().logout().permitAll();
     }
 
     @Override
     public void configure(WebSecurity web) throws Exception {
         web.ignoring().antMatchers("/resources/**");
         web.ignoring().antMatchers("/signup");
+        web.ignoring().antMatchers("/adduser");
 
     }
     @Bean

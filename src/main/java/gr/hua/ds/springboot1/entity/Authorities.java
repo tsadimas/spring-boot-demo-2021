@@ -1,15 +1,19 @@
 package gr.hua.ds.springboot1.entity;
 
+import org.springframework.security.core.GrantedAuthority;
+
 import javax.persistence.*;
 
 @Entity
 @Table(name = "authorities")
-public class Authorities {
+@IdClass(AuthPK.class)
+public class Authorities implements GrantedAuthority {
 
     @Id
     @Column(name = "authority")
     private String authority;
 
+    @Id
     @ManyToOne
     @JoinColumn(name = "username")
     private User user;
@@ -30,5 +34,11 @@ public class Authorities {
         this.user = user;
     }
 
+    public Authorities() {
+    }
 
+    public Authorities(String authority, User user) {
+        this.authority = authority;
+        this.user = user;
+    }
 }

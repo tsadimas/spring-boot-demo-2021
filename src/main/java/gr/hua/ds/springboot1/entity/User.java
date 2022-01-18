@@ -1,8 +1,10 @@
 package gr.hua.ds.springboot1.entity;
 
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 
 @Entity
@@ -19,7 +21,7 @@ public class User {
     private boolean enabled;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "user", fetch = FetchType.EAGER)
-    private Set<Authorities> authorities = new HashSet<>();
+    private Collection<Authorities> authorities = new HashSet<>();
 
     public String getUsername() {
         return username;
@@ -45,12 +47,14 @@ public class User {
         this.enabled = enabled;
     }
 
-    public Set<Authorities> getAuthorities() {
-        return authorities;
+    public Collection<Authorities> getAuthorities() {return authorities;    }
+
+    public void setAuthorities(Collection<Authorities> authorities) {
+        this.authorities = authorities;
     }
 
-    public void setAuthorities(Set<Authorities> authorities) {
-        this.authorities = authorities;
+    public void addAuthority(Authorities authority) {
+        this.authorities.add(authority);
     }
 
 }
