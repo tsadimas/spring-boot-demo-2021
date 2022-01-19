@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 import java.util.Optional;
 
 @Component
-@RepositoryEventHandler(User.class)
+@RepositoryEventHandler
 public class UserEventHandler {
 
     @Autowired
