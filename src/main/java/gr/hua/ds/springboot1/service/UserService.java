@@ -30,7 +30,6 @@ public class UserService implements UserDetailsService {
     private AuthorityRepository authRepository;
 
 
-
     public void registerUser(User user) {
 
         User newUser = new User();

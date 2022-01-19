@@ -33,4 +33,5 @@ public class UserController {
         userService.registerUser(user);
         return "redirect:/index";
     }
+
 }
