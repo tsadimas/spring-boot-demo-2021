@@ -57,4 +57,11 @@ public class User {
         this.authorities.add(authority);
     }
 
+    @Override
+    public String toString() {
+        return "User{" +
+                "username='" + username + '\'' +
+                ", authorities=" + authorities +
+                '}';
+    }
 }

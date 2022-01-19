@@ -41,4 +41,9 @@ public class Authorities implements GrantedAuthority {
         this.authority = authority;
         this.user = user;
     }
+
+    @Override
+    public String toString() {
+        return authority;
+    }
 }
