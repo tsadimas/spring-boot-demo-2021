@@ -11,13 +11,21 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -54,7 +62,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 //                        .and()
 
 
-        http.cors().and().
+        http.cors().configurationSource(corsConfigurationSource()).and().
                 csrf().disable().authorizeRequests()
                 .antMatchers("/api/users").hasRole("ADMIN")
                 .antMatchers("/api/students").hasAnyRole("ADMIN","USER")
@@ -72,8 +80,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         web.ignoring().antMatchers("/resources/**");
         web.ignoring().antMatchers("/signup");
         web.ignoring().antMatchers("/adduser");
-        web.ignoring().antMatchers("/api/students");
-        web.ignoring().antMatchers("/login");
+//        web.ignoring().antMatchers("/api/students");
+//        web.ignoring().antMatchers("/login");
 
     }
     @Bean
@@ -86,11 +94,35 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList("*"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("authorization", "content-type", "x-auth-token"));
-        configuration.setExposedHeaders(Arrays.asList("x-auth-token"));
+        configuration.setAllowedHeaders(Arrays.asList("authorization", "content-type", "x-auth-token", "referer"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
+    }
+
+    private AuthenticationSuccessHandler successHandler() {
+        return new AuthenticationSuccessHandler() {
+
+            @Override
+            public void onAuthenticationSuccess(HttpServletRequest httpServletRequest,
+                                                HttpServletResponse httpServletResponse, Authentication authentication)
+                    throws IOException, ServletException {
+                httpServletResponse.getWriter().append("OK");
+                httpServletResponse.setStatus(200);
+            }
+        };
+    }
+
+    private AuthenticationFailureHandler failureHandler() {
+        return new AuthenticationFailureHandler() {
+            @Override
+            public void onAuthenticationFailure(HttpServletRequest httpServletRequest,
+                                                HttpServletResponse httpServletResponse, AuthenticationException e)
+                    throws IOException, ServletException {
+                httpServletResponse.getWriter().append("Authentication failure");
+                httpServletResponse.setStatus(401);
+            }
+        };
     }
 
 

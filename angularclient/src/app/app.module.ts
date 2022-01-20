@@ -24,7 +24,7 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
     HttpClientModule,
     FormsModule
   ],
-  providers: [
+  providers: [UserService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: HttpInterceptorService,
