@@ -51,4 +51,9 @@ export class AuthenticationService {
     if (user === null) return ''
     return user
   }
+
+
+  logOut() {
+    sessionStorage.removeItem('username')
+  }
 }
