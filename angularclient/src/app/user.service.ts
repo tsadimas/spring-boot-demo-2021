@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { User } from '../model/user';
+import { User } from './user.model';
 import { Observable } from 'rxjs/Observable';
 
 @Injectable()
@@ -9,7 +9,7 @@ export class UserService {
   private usersUrl: string;
 
   constructor(private http: HttpClient) {
-    this.usersUrl = 'http://localhost:8080/users';
+    this.usersUrl = 'http://localhost:9000/api/students';
   }
 
   public findAll(): Observable<User[]> {
